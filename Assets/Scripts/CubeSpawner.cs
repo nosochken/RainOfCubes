@@ -14,6 +14,7 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField, Min(0)] private float _repeatRate = 1f;
 
     [SerializeField, Min(5)] private float _spawnHeight = 15f;
+    [SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
 
     private ObjectPool<Cube> _pool;
 
@@ -31,14 +32,14 @@ public class CubeSpawner : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("to stop spawning press space key");
+        Debug.Log($"to stop spawning press {_spawnStopKey}");
 
         InvokeRepeating(nameof(SpawnCube), _delay, _repeatRate);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(_spawnStopKey))
         {
             CancelInvoke(nameof(SpawnCube));
 

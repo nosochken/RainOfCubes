@@ -1,18 +1,23 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(ColorChanger))]
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private Dyeing _dyeing;
-
     [SerializeField, Min(1)] private int _minLifetime = 2;
     [SerializeField, Min(1)] private int _maxLifetime = 5;
 
+    private ColorChanger _colorChanger;
     private bool _hadCollision;
     private bool _isLifetimeOver;
     private int _lifetime;
 
     public bool IsLifetimeOver => _isLifetimeOver;
+
+    private void Awake()
+    {
+        _colorChanger = GetComponent<ColorChanger>();
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -26,7 +31,7 @@ public class Cube : MonoBehaviour
     public void ResetSettings()
     {
         _hadCollision = false;
-        _dyeing.SetDefaultColor();
+        _colorChanger.SetDefaultColor();
         gameObject.SetActive(false);
         _isLifetimeOver = false;
     }
@@ -35,7 +40,7 @@ public class Cube : MonoBehaviour
     {
         _hadCollision = true;
         _lifetime = DetermineLifetime();
-        _dyeing.Dye();
+        _colorChanger.ChangeColor();
 
         StartCoroutine(Expire());
     }

@@ -1,22 +1,31 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(ColorChanger))]
 public class Plane : MonoBehaviour
 {
-    [SerializeField] private Dyeing _dyeing;
+    private Collider _collider;
+    private ColorChanger _colorChanger;
+
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+        _colorChanger = GetComponent<ColorChanger>();
+    }
 
     private void Start()
     {
-        _dyeing.Dye();
+        _colorChanger.ChangeColor();
     }
 
     public Vector3 GetRandomPosition(float y, Vector3 objectScale)
     {
         float x = Random.Range(
-            GetComponent<Collider>().bounds.min.x + objectScale.x,
-            GetComponent<Collider>().bounds.max.x - objectScale.x);
+            _collider.bounds.min.x + objectScale.x,
+            _collider.bounds.max.x - objectScale.x);
         float z = Random.Range(
-            GetComponent<Collider>().bounds.min.z + objectScale.z,
-            GetComponent<Collider>().bounds.max.z - objectScale.z);
+            _collider.bounds.min.z + objectScale.z,
+            _collider.bounds.max.z - objectScale.z);
 
         return new Vector3(x, y, z);
     }

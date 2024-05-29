@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
-public class Dyeing : MonoBehaviour
+public class ColorChanger : MonoBehaviour
 {
     private Renderer _renderer;
     private Color _defaultColor;
@@ -12,7 +12,7 @@ public class Dyeing : MonoBehaviour
         _defaultColor = _renderer.material.color;
     }
 
-    public void Dye()
+    public void ChangeColor()
     {
         _renderer.material.color = Random.ColorHSV();
     }
