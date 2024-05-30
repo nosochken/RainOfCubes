@@ -5,13 +5,12 @@ using UnityEngine.Pool;
 public class CubeSpawner : MonoBehaviour
 {
     [SerializeField] private Cube _cubePrefab;
-    [SerializeField] private Plane _plane;
+    [SerializeField] private SpawnZone _spawnZone; 
 
     [SerializeField, Min(1)] private int _poolCapacity = 5;
     [SerializeField, Min(1)] private int _poolMaxSize = 5;
 
     [SerializeField, Min(0)] private float _delay = 2f;
-    [SerializeField, Min(5)] private float _spawnHeight = 15f;
     [SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
 
     private ObjectPool<Cube> _pool;
@@ -40,9 +39,12 @@ public class CubeSpawner : MonoBehaviour
     {
         if (Input.GetKeyDown(_spawnStopKey))
         {
-            StopCoroutine(_coroutine);
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
 
-            Debug.Log("spawn completed");
+                Debug.Log("spawn completed");
+            }
         }
     }
 
@@ -57,7 +59,7 @@ public class CubeSpawner : MonoBehaviour
     private void ActOnGet(Cube cube)
     {
         cube.gameObject.transform.position =
-            _plane.GetRandomPosition(_spawnHeight, cube.transform.localScale);
+            _spawnZone.GetRandomPosition(cube.transform.localScale);
 
         cube.gameObject.SetActive(true);  
     }
@@ -71,9 +73,10 @@ public class CubeSpawner : MonoBehaviour
 
     private IEnumerator Spawn()
     {
+        var wait = new WaitForSecondsRealtime(_delay);
+
         while (!Input.GetKey(_spawnStopKey))
-        {
-            var wait = new WaitForSecondsRealtime(_delay);
+        { 
             yield return wait;
 
             _pool.Get();
