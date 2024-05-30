@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,10 +10,9 @@ public class Cube : MonoBehaviour
 
     private ColorChanger _colorChanger;
     private bool _hadCollision;
-    private bool _isLifetimeOver;
     private int _lifetime;
 
-    public bool IsLifetimeOver => _isLifetimeOver;
+    public event Action<Cube> LifetimeWasOver;
 
     private void Awake()
     {
@@ -21,9 +21,9 @@ public class Cube : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<Plane>())
+        if (_hadCollision == false)
         {
-            if (_hadCollision == false)
+            if (collision.gameObject.GetComponent<Plane>())
                 ActivateLifeCycle();
         }  
     }
@@ -31,23 +31,22 @@ public class Cube : MonoBehaviour
     public void ResetSettings()
     {
         _hadCollision = false;
-        _colorChanger.SetDefaultColor();
+        _colorChanger.SetDefault();
         gameObject.SetActive(false);
-        _isLifetimeOver = false;
     }
 
     private void ActivateLifeCycle()
     {
         _hadCollision = true;
         _lifetime = DetermineLifetime();
-        _colorChanger.ChangeColor();
+        _colorChanger.Change();
 
         StartCoroutine(Expire());
     }
 
     private int DetermineLifetime()
     {
-        return Random.Range(_minLifetime, _maxLifetime);
+        return UnityEngine.Random.Range(_minLifetime, _maxLifetime);
     }
 
     private IEnumerator Expire()
@@ -55,6 +54,6 @@ public class Cube : MonoBehaviour
         var wait = new WaitForSecondsRealtime(_lifetime);
         yield return wait;
 
-        _isLifetimeOver = true;
+        LifetimeWasOver?.Invoke(this);
     }
 }

@@ -161,9 +161,9 @@ MonoBehaviour:
   _plane: {fileID: 535072346}
   _poolCapacity: 5
   _poolMaxSize: 5
-  _delay: 1
-  _repeatRate: 1
+  _delay: 2
   _spawnHeight: 15
+  _spawnStopKey: 32
 --- !u!4 &295190956
 Transform:
   m_ObjectHideFlags: 0

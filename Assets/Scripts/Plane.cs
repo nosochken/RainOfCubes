@@ -15,7 +15,7 @@ public class Plane : MonoBehaviour
 
     private void Start()
     {
-        _colorChanger.ChangeColor();
+        _colorChanger.Change();
     }
 
     public Vector3 GetRandomPosition(float y, Vector3 objectScale)

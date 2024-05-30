@@ -12,12 +12,12 @@ public class ColorChanger : MonoBehaviour
         _defaultColor = _renderer.material.color;
     }
 
-    public void ChangeColor()
+    public void Change()
     {
         _renderer.material.color = Random.ColorHSV();
     }
 
-    public void SetDefaultColor()
+    public void SetDefault()
     {
         _renderer.material.color = _defaultColor;
     }

@@ -10,21 +10,20 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField, Min(1)] private int _poolCapacity = 5;
     [SerializeField, Min(1)] private int _poolMaxSize = 5;
 
-    [SerializeField, Min(0)] private float _delay = 5f;
-    [SerializeField, Min(0)] private float _repeatRate = 1f;
-
+    [SerializeField, Min(0)] private float _delay = 2f;
     [SerializeField, Min(5)] private float _spawnHeight = 15f;
     [SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
 
     private ObjectPool<Cube> _pool;
+    private Coroutine _coroutine;
 
     private void Awake()
     {
         _pool = new ObjectPool<Cube>(
-        createFunc: () => Instantiate(_cubePrefab),
-        actionOnGet: (cube) => ActionOnGet(cube),
+        createFunc: () => Create(),
+        actionOnGet: (cube) => ActOnGet(cube),
         actionOnRelease : (cube) => cube.ResetSettings(),
-        actionOnDestroy : (cube) => Destroy(cube.gameObject),
+        actionOnDestroy : (cube) => ActOnDestroy(cube),
         collectionCheck : true,
         defaultCapacity : _poolCapacity,
         maxSize : _poolMaxSize);
@@ -34,36 +33,55 @@ public class CubeSpawner : MonoBehaviour
     {
         Debug.Log($"to stop spawning press {_spawnStopKey}");
 
-        InvokeRepeating(nameof(SpawnCube), _delay, _repeatRate);
+        _coroutine = StartCoroutine(Spawn());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(_spawnStopKey))
         {
-            CancelInvoke(nameof(SpawnCube));
+            StopCoroutine(_coroutine);
 
             Debug.Log("spawn completed");
         }
     }
 
-    private void ActionOnGet(Cube cube)
+    private Cube Create()
+    {
+        Cube cube = Instantiate(_cubePrefab);
+        cube.LifetimeWasOver += ReturnToPoolAfterLifetime;
+
+        return cube;
+    }
+
+    private void ActOnGet(Cube cube)
     {
         cube.gameObject.transform.position =
             _plane.GetRandomPosition(_spawnHeight, cube.transform.localScale);
 
-        cube.gameObject.SetActive(true);
+        cube.gameObject.SetActive(true);  
     }
 
-    private void SpawnCube()
+    private void ActOnDestroy(Cube cube)
     {
-        StartCoroutine(ReturnToPoolAfterLifetime(_pool.Get()));
+        cube.LifetimeWasOver -= ReturnToPoolAfterLifetime;
+
+        Destroy(cube.gameObject);
     }
 
-   private IEnumerator ReturnToPoolAfterLifetime(Cube cube)
+    private IEnumerator Spawn()
     {
-        yield return new WaitUntil(() => cube.IsLifetimeOver);
+        while (!Input.GetKey(_spawnStopKey))
+        {
+            var wait = new WaitForSecondsRealtime(_delay);
+            yield return wait;
 
+            _pool.Get();
+        }
+    }
+
+    private void ReturnToPoolAfterLifetime(Cube cube)
+    {
         _pool.Release(cube);
     }
 }
