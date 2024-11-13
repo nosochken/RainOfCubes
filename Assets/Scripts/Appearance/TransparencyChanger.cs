@@ -8,7 +8,7 @@ public class TransparencyChanger : MonoBehaviour
     private Color _startColor;
 
     private void Awake()
-	{
+    {
 		_material = GetComponent<Renderer>().material;
 		_startColor = _material.color;
 	}
