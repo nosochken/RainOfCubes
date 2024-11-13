@@ -3,8 +3,8 @@ using System.Collections;
 using UnityEngine;
 
 public class CubeSpawner : Spawner<Cube>
-{ 
-	[SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
+{
+    [SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
 	[SerializeField] private SpawnZone _spawnZone; 
 	[SerializeField, Min(0)] private float _delay = 0.5f;
 	

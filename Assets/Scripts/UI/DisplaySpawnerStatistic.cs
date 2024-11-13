@@ -7,7 +7,7 @@ public class DisplaySpawnerStatistic<T> : MonoBehaviour where T : MonoBehaviour,
 
     [SerializeField] private TextMeshProUGUI _createdObjectsAmountText;
     [SerializeField] private TextMeshProUGUI _spawnedObjectsAmountText;
-	[SerializeField] private TextMeshProUGUI _activeObjectsAmounText;
+    [SerializeField] private TextMeshProUGUI _activeObjectsAmounText;
 	
 	private void OnEnable()
 	{

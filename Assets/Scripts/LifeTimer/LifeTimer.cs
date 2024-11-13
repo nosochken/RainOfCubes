@@ -5,7 +5,7 @@ using UnityEngine;
 public class LifeTimer : Timer
 {
     [SerializeField, Min(1)] private int _minLifetime = 2;
-	[SerializeField, Min(1)] private int _maxLifetime = 5;
+    [SerializeField, Min(1)] private int _maxLifetime = 5;
 	
 	private float _lifetime;
 

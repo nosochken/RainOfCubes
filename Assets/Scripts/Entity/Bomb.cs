@@ -5,7 +5,7 @@ using UnityEngine;
 public class Bomb : MonoBehaviour, ISpawnable<Bomb>
 {
     [SerializeField] private float _explosionRadius = 10f;
-	[SerializeField] private float _explosionForce = 50f;
+    [SerializeField] private float _explosionForce = 50f;
 	[SerializeField] private float _upwardsModifier = 3f;
 
 	private LifeTimer _lifeTimer;

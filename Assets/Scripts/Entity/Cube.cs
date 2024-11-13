@@ -7,7 +7,7 @@ public class Cube : MonoBehaviour, ISpawnable<Cube>
 {
     [SerializeField] private float _timeUntilLifelessCycleRelease = 5f;
 
-	private LifeTimer _lifeTimer;
+    private LifeTimer _lifeTimer;
 	private ColorChanger _colorChanger;
 	
 	private bool _hadCollision;
