@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 public class Spawner<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 {
     [SerializeField] private T _prefab;
-	[SerializeField, Min(1)] private int _poolCapacity = 15;
+    [SerializeField, Min(1)] private int _poolCapacity = 15;
 	[SerializeField, Min(1)] private int _poolMaxSize = 15;
 
 	private ObjectPool<T> _pool;

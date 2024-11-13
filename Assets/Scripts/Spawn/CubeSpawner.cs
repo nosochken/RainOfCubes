@@ -5,10 +5,10 @@ using UnityEngine;
 public class CubeSpawner : Spawner<Cube>
 {
     [SerializeField] private KeyCode _spawnStopKey = KeyCode.Space;
-	[SerializeField] private SpawnZone _spawnZone; 
-	[SerializeField, Min(0)] private float _delay = 0.5f;
-	
-	private Coroutine _coroutine;
+    [SerializeField] private SpawnZone _spawnZone;
+    [SerializeField, Min(0)] private float _delay = 0.5f;
+
+    private Coroutine _coroutine;
 	
 	public event Action<Vector3, Vector3> CubeReleasing;
 

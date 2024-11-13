@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DisplaySpawnerStatistic<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 {
-	[SerializeField] private Spawner<T> _spawner;
+    [SerializeField] private Spawner<T> _spawner;
 
 	[SerializeField] private TextMeshProUGUI _createdObjectsAmountText;
 	[SerializeField] private TextMeshProUGUI _spawnedObjectsAmountText;

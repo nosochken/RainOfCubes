@@ -5,7 +5,7 @@ public class BombSpawner : Spawner<Bomb>
     [SerializeField] private CubeSpawner _cubeSpawner;
 
     private Vector3 _spawnPosition;
-	private Vector3 _bombVelocity;
+    private Vector3 _bombVelocity;
 	
 	private void OnEnable()
 	{
