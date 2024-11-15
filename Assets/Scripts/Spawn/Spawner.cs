@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 public class Spawner<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 {
     [SerializeField] private T _prefab;
-    [SerializeField, Min(1)] private int _poolCapacity = 15;
+	[SerializeField, Min(1)] private int _poolCapacity = 15;
 	[SerializeField, Min(1)] private int _poolMaxSize = 15;
 
 	private ObjectPool<T> _pool;
@@ -16,6 +16,8 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 	public event Action<int> CreatedObjectsAmountHasChanged;
 	public event Action<int> SpawnedObjectsAmountHasChanged;
 	public event Action<int> ActiveObjectsAmountHasChanged;
+	
+	protected Vector3 SpawnableObjectScale => _prefab.gameObject.transform.localScale;
 
 	private void Awake()
 	{
@@ -29,28 +31,32 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 		maxSize : _poolMaxSize);
 	}
 	
-	protected void Spawn()
+	protected void Spawn(Vector3 position, Vector3 velocity)
 	{
-		_pool.Get();
+		T spawnableObject = _pool.Get();
+		
+		spawnableObject.transform.position = position;
+		
+		if(spawnableObject.TryGetComponent(out Rigidbody rigidbody))
+			rigidbody.velocity = velocity;
 		
 		_spawnedObjectsAmount++;
 		SpawnedObjectsAmountHasChanged?.Invoke(_spawnedObjectsAmount);
 	}
 	
-	protected virtual void ActOnGet(T spawnableObject)
+	protected virtual void ReturnToPool(T spawnableObject)
 	{
-		spawnableObject.gameObject.SetActive(true);
+		spawnableObject.gameObject.SetActive(false);
+		_pool.Release(spawnableObject);
 		
 		ActiveObjectsAmountHasChanged?.Invoke(_pool.CountActive);
 	}
 	
-	protected virtual void ReturnToPool(T spawnableObject)
+	private void ActOnGet(T spawnableObject)
 	{
-		spawnableObject.gameObject.SetActive(false);
+		spawnableObject.gameObject.SetActive(true);
 		
 		ActiveObjectsAmountHasChanged?.Invoke(_pool.CountActive);
-		 
-		_pool.Release(spawnableObject);
 	}
 
 	private T Create()
@@ -67,8 +73,8 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour, ISpawnable<T>
 	private void ActOnDestroy(T spawnableObject)
 	{
 		spawnableObject.ReadiedForRelease -= ReturnToPool;
-		ActiveObjectsAmountHasChanged?.Invoke(_pool.CountActive);
-
 		Destroy(spawnableObject.gameObject);
+		
+		ActiveObjectsAmountHasChanged?.Invoke(_pool.CountActive);
 	}
 }

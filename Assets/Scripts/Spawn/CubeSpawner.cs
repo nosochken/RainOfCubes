@@ -8,7 +8,7 @@ public class CubeSpawner : Spawner<Cube>
     [SerializeField] private SpawnZone _spawnZone;
     [SerializeField, Min(0)] private float _delay = 0.5f;
 
-    private Coroutine _coroutine;
+	private Coroutine _coroutine;
 	
 	public event Action<Vector3, Vector3> CubeReleasing;
 
@@ -24,17 +24,6 @@ public class CubeSpawner : Spawner<Cube>
 			if (_coroutine != null)
 				StopCoroutine(_coroutine);
 		}
-	}
-
-	protected override void ActOnGet(Cube cube)
-	{
-		if (cube.TryGetComponent(out Rigidbody rigidbody))
-			rigidbody.velocity = Vector3.zero;
-			
-		cube.gameObject.transform.position =
-			_spawnZone.GetRandomPosition(cube.transform.localScale);
-
-		base.ActOnGet(cube);
 	}
 	
 	protected override void ReturnToPool(Cube cube)
@@ -55,7 +44,8 @@ public class CubeSpawner : Spawner<Cube>
 		{ 
 			yield return wait;
 			
-			Spawn();
+			Vector3 position = _spawnZone.GetRandomPosition(SpawnableObjectScale);
+			Spawn(position, Vector3.zero);
 		}
 	}
 }

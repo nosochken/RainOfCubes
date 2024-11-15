@@ -1,38 +1,49 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(LifeTimer), typeof(TransparencyChanger))]
+[RequireComponent(typeof(LifetimeDeterminant), typeof(TransparencyChanger))]
 public class Bomb : MonoBehaviour, ISpawnable<Bomb>
 {
-    [SerializeField] private float _explosionRadius = 10f;
-    [SerializeField] private float _explosionForce = 50f;
-    [SerializeField] private float _upwardsModifier = 3f;
+    [SerializeField, Min(0)] private float _explosionRadius = 10f;
+    [SerializeField, Min(0)] private float _explosionForce = 50f;
+	[SerializeField, Min(0)] private float _upwardsModifier = 3f;
 
-	private LifeTimer _lifeTimer;
+	private LifetimeDeterminant _lifetimeDeterminant;
 	private TransparencyChanger _transparencyChanger;
    
 	public event Action<Bomb> ReadiedForRelease;
 	
 	private void Awake()
 	{
-		_lifeTimer = GetComponent<LifeTimer>();
+		_lifetimeDeterminant = GetComponent<LifetimeDeterminant>();
+		
 		_transparencyChanger = GetComponent<TransparencyChanger>();
+		_transparencyChanger.Init();
 	}
 	
 	private void OnEnable()
 	{
-		_lifeTimer.LifetimeWasOver += Explode;
-		
-		StartCoroutine(_lifeTimer.Expire());
-		StartCoroutine(_transparencyChanger.GraduallyBecomeTransparent(_lifeTimer.Lifetime));
-	}
-	
-	private void OnDisable()
-	{
-		_lifeTimer.LifetimeWasOver -= Explode;
+		_lifetimeDeterminant.DetermineLifetime();
+		StartCoroutine(BeActive());
 	}
 	
 	public void ResetSettings() => _transparencyChanger.SetInitialTransparency();
+	
+	private IEnumerator BeActive()
+	{
+		float elapsedTime = 0;
+		
+		while (elapsedTime < _lifetimeDeterminant.Lifetime)
+		{
+			_transparencyChanger.BecomeTransparent(elapsedTime, _lifetimeDeterminant.Lifetime);
+			elapsedTime += Time.deltaTime;
+			
+			yield return null;
+		}
+		
+		Explode();
+	}
 	
 	private void Explode()
 	{

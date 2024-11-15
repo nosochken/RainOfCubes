@@ -1,32 +1,25 @@
-using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
 public class TransparencyChanger : MonoBehaviour
 {
+    [SerializeField, Range(0, 1)] private float _targetOpacity = 0f;
+
     private Material _material;
     private Color _startColor;
-
-    private void Awake()
-    {
+	private Color _targetColor;
+	
+	public void Init()
+	{
 		_material = GetComponent<Renderer>().material;
+		
 		_startColor = _material.color;
+		_targetColor = new Color(_startColor.r, _startColor.g, _startColor.b, _targetOpacity);
 	}
 	
-	public IEnumerator GraduallyBecomeTransparent(float lifeTimer)
+	public void BecomeTransparent(float elapsedTime, float lifeTime)
 	{
-		float elapsedTime = 0f;
-		
-		float opacity = 0f;
-		Color targetColor = new Color(_startColor.r, _startColor.g, _startColor.b, opacity);
-		
-		while (elapsedTime < lifeTimer)
-		{
-			_material.color = Color.Lerp(_startColor, targetColor, elapsedTime / lifeTimer);
-			elapsedTime += Time.deltaTime;
-			
-			yield return null;
-		}
+		_material.color = Color.Lerp(_startColor, _targetColor, elapsedTime / lifeTime);
 	}
 	
 	public void SetInitialTransparency()

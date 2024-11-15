@@ -2,28 +2,29 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(LifeTimer), typeof(ColorChanger))]
+[RequireComponent(typeof(LifetimeDeterminant), typeof(ColorChanger))]
 public class Cube : MonoBehaviour, ISpawnable<Cube>
 {
-    [SerializeField] private float _timeUntilLifelessCycleRelease = 5f;
+    [SerializeField, Min(1)] private float _timeUntilLifelessCycleRelease = 5f;
 
-    private LifeTimer _lifeTimer;
-    private ColorChanger _colorChanger;
-	
+	private LifetimeDeterminant _lifetimeDeterminant;
+	private ColorChanger _colorChanger;
+
 	private bool _hadCollision;
 	
 	public event Action<Cube> ReadiedForRelease;
 
 	private void Awake()
 	{
-		_lifeTimer = GetComponent<LifeTimer>();
+		_lifetimeDeterminant = GetComponent<LifetimeDeterminant>();
+		
 		_colorChanger = GetComponent<ColorChanger>();
+		_colorChanger.Init();
 	}
 	
 	private void OnEnable()
 	{
-		_lifeTimer.LifetimeWasOver += ReportReadinessForRelease;
-		
+		_lifetimeDeterminant.DetermineLifetime();
 		StartCoroutine(BeReadyForReleaseAfterTime());
 	}
 
@@ -31,14 +32,9 @@ public class Cube : MonoBehaviour, ISpawnable<Cube>
 	{
 		if (_hadCollision == false)
 		{
-			if (collision.gameObject.GetComponent<Plane>())
-				ActivateLifeCycle();
+			if (collision.gameObject.TryGetComponent<Plane>(out _))
+				StartCoroutine(BeActive());
 		}  
-	}
-	
-	private void OnDisable()
-	{
-		_lifeTimer.LifetimeWasOver -= ReportReadinessForRelease;
 	}
 
 	public void ResetSettings()
@@ -46,22 +42,22 @@ public class Cube : MonoBehaviour, ISpawnable<Cube>
 		_hadCollision = false;
 		_colorChanger.SetDefault();
 	}
+	
+	private IEnumerator BeReadyForReleaseAfterTime()
+	{
+		yield return new WaitForSeconds(_timeUntilLifelessCycleRelease);
+		
+		if(_hadCollision == false)
+			ReadiedForRelease?.Invoke(this);
+	}
 
-	private void ActivateLifeCycle()
+	private IEnumerator BeActive()
 	{
 		_hadCollision = true;
 		_colorChanger.Change();
 		
-		StartCoroutine(_lifeTimer.Expire());
-	}
-	
-	private IEnumerator BeReadyForReleaseAfterTime()
-	{
-		yield return StartCoroutine(_lifeTimer.ExpireThrough(_timeUntilLifelessCycleRelease));
+		yield return new WaitForSeconds(_lifetimeDeterminant.Lifetime);
 		
-		if(!_hadCollision)
-			ReportReadinessForRelease();
+		ReadiedForRelease?.Invoke(this);
 	}
-	
-	private void ReportReadinessForRelease() => ReadiedForRelease?.Invoke(this);
 }

@@ -6,7 +6,7 @@ public class ColorChanger : MonoBehaviour
     private Renderer _renderer;
     private Color _defaultColor;
 
-    private void Awake()
+    public void Init()
     {
         _renderer = GetComponent<Renderer>();
         _defaultColor = _renderer.material.color;

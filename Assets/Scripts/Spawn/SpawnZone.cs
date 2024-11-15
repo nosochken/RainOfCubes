@@ -3,7 +3,7 @@ using UnityEngine;
 public class SpawnZone : MonoBehaviour
 {
     [SerializeField] private Plane _plane;
-    [SerializeField] private float _height = 15f;
+    [SerializeField, Min(1)] private float _height = 15f;
 
     private Collider _planeCollider;
 
